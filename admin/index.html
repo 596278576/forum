@@ -68,6 +68,10 @@ $.ajax({
 
     }
 })
+$('.logout').on('click',()=>{
+    localStorage.removeItem('token');
+    location.href='./login.html'
+})
 
 </script>
 </html>
