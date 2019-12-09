@@ -110,9 +110,26 @@
             } else {
                 $('#exampleModalLabel').text('编辑内容')
                 $('#btn-confirm').text('编辑');
-                
+                let id = $(dom).attr('data-id')
+                $.get({
+                    url: BigNew.category_search,
+                    data: {
+                        id: id
+                    },
+                    success: function (res) {
+                        // console.log(res);
+                        if (res.code == 200) {
+                            $('#recipient-name').val(res.data[0].name)
+                            $('#message-text').val(res.data[0].slug)
+                            $('#cateid').val(res.data[0].id)
+                        }
+
+                    }
+                })
             }
         })
+
+        
     </script>
 
 </html>
