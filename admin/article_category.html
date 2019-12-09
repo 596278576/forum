@@ -149,11 +149,47 @@
                         if (res.code == 201) {
                             getdata();
                             $('#myModal').modal('hide')
-
+                        }
+                    }
+                })
+            }else{
+                let name = $('#recipient-name').val()
+                let slug = $('#message-text').val()
+                let id=$('#cateid').val()
+                $.post({
+                    url:BigNew.category_edit,
+                    data:{
+                        name:name,
+                        slug:slug,
+                        id:id
+                    },
+                    success:function(res){
+                        alert(res.msg)
+                        if(res.code==200){
+                            getdata();
+                            $('#myModal').modal('hide')
                         }
                     }
                 })
             }
+        })
+        $('tbody').on('click','#btn-delete',function(){
+
+            // console.log(123);
+            
+            let id=$(this).attr('data-id');
+            $.post({
+                url:BigNew.category_delete,
+                data:{
+                    id:id
+                },
+                success:function(res){
+                    alert(res.msg);
+                    if(res.code==204){
+                        getdata();
+                    }
+                }
+            })
         })
     </script>
 
