@@ -80,7 +80,7 @@
         {{ each data}}
         <tr>
             <td>{{$value.name}}</td>
-            <td>{{$value.Slug}}</td>
+            <td>{{$value.slug}}</td>
             <td class="text-center">
                 <a href="javascript:void(0)" data-id='{{$value.id}}' data-toggle="modal" class=" btn btn-info btn-xs"
                     data-target="#myModal">编辑</a>
@@ -91,15 +91,19 @@
         {{/each}}
     </script>
     <script>
-        $.get({
-            url: BigNew.category_list,
-            success: function (res) {
-                if (res.code == 200) {
-                    let html = template('tp', res);
-                    $('tbody').html(html);
+        getdata();
+
+        function getdata() {
+            $.get({
+                url: BigNew.category_list,
+                success: function (res) {
+                    if (res.code == 200) {
+                        let html = template('tp', res);
+                        $('tbody').html(html);
+                    }
                 }
-            }
-        })
+            })
+        }
 
         $('#myModal').on('show.bs.modal', function (e) {
             let dom = e.relatedTarget;
@@ -129,7 +133,28 @@
             }
         })
 
-        
+        $('#btn-confirm').on('click', function () {
+            if ($('#btn-confirm').text() == '新增') {
+                let name = $('#recipient-name').val()
+                let slug = $('#message-text').val()
+                $.ajax({
+                    type: 'post',
+                    url: BigNew.category_add,
+                    data: {
+                        name: name,
+                        slug: slug
+                    },
+                    success: function (res) {
+                        alert(res.msg)
+                        if (res.code == 201) {
+                            getdata();
+                            $('#myModal').modal('hide')
+
+                        }
+                    }
+                })
+            }
+        })
     </script>
 
 </html>
