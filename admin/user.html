@@ -44,7 +44,7 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
-                        <input style="display: block" name="userPic" type="file" id="exampleInputFile">
+                        <input style="display: none" name="userPic" type="file" id="exampleInputFile">
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
                         <label for="exampleInputFile">
@@ -69,5 +69,54 @@
         </div>
     </div>
 </body>
+<script src="./libs/http.js"></script>
+<script>
+    $.get({
+        url: BigNew.user_detail,
+        success: function (res) {
+            // console.log(res);
+            if (res.code == 200) {
+                for (let key in res.data) {
+                    $('input.' + key).val(res.data[key])
+                }
+                $('.user_pic').attr('src', res.data.userPic)
+            }
+        }
+    })
+    $('#exampleInputFile').change(function () {
+        let fd = this.files[0];
+        let url = URL.createObjectURL(fd);
+        $('.user_pic').attr('src', url);
+    })
+    $('.btn-edit').click(function (e) {
+        e.preventDefault();
+        let data = $('#form')[0];
+        let fd = new FormData(data);
+        $.post({
+            url: BigNew.user_edit,
+            data: fd,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.code == 200) {
+                    $.ajax({
+                        url: 'http://localhost:8080/api/v1/admin/user/info',
+                        type: 'get',
+                        success: function (res) {
+                            if (res.code == 200) {
+                                parent.$('.user_info img').attr('src', res.data.userPic);
+                                parent.$('.user_info span').html(
+                                    `欢迎&nbsp;&nbsp;${res.data.nickname}`);
+                                    parent.$('.user_center_link img').attr('src', res.data.userPic)
+                            }
+
+                        }
+                    })
+                }
+
+            }
+        })
+    })
+</script>
 
 </html>
