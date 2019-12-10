@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/iconfont.css">
     <link rel="stylesheet" href="./css/main.css">
-    <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="./libs/jquery-1.12.4.min.js"></script>
+    <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="./libs/jquery.twbsPagination.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
@@ -27,11 +27,7 @@
                 <div class="col-xs-6">
                     <form class="form-inline">
                         <select id="selCategory" name="" class="form-control input-sm">
-                            <option value="">所有分类</option>
-                            <option>未分类</option>
-                            <option>奇趣事</option>
-                            <option>会生活</option>
-                            <option>爱旅行</option>
+
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
                             <option value="">所有状态</option>
@@ -75,5 +71,22 @@
         </div>
     </div>
 </body>
-
+<script src="./libs/http.js"></script>
+<script type="text/html" id='tp'>
+    <option value="">所有分类</option>
+    {{ each data}}
+    <option vlaue="{{$value.id}}">{{$value.name}}</option>
+    {{/each}}
+</script>
+<script>
+    $.get({
+        url:BigNew.category_list,
+        success:function(res){
+            if(res.code==200){
+                let html=template('tp',res);
+                $('#selCategory').html(html)
+            }
+        }
+    })
+</script>
 </html>
