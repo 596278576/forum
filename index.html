@@ -259,6 +259,16 @@
 
     {{/each}}
 </script>
+<script type="text/html" id='tp4'>
+    {{each data}}
+    <li>
+        <span>{{$value.author.substr(0,1)}}</span>
+        <b><em>{{$value.author}}</em> {{$value.date}}说:</b>
+        <strong>{{@ $value.intro}}</strong>
+    </li>
+
+    {{/each}}
+</script>
 <script>
     $.get({
         url: 'http://localhost:8080/api/v1/index/hotpic',
@@ -281,11 +291,20 @@
     $.get({
         url: 'http://localhost:8080/api/v1/index/rank',
         success: function (res) {
-            console.log(res);
+            // console.log(res);
             let html = template('tp3', res)
             $('.hotrank_list').html(html)
             $('.hotrank_list li:eq(0) span').addClass('first')
             $('.hotrank_list li:eq(1) span').addClass('second')
+        }
+    })
+    $.get({
+        url: 'http://localhost:8080/api/v1/index/latest_comment',
+        success: function (res) {
+            // console.log(res);
+            let html = template('tp4', res)
+            $('.comment_list').html(html)
+            
         }
     })
 </script>
