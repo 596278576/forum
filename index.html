@@ -231,24 +231,45 @@
 
 </html>
 <script type="text/html" id='tp1'>
-{{each data}}
-<li>
-    <a href="./article.html?id={{$value.id}}"><img src="{{$value.cover}}" alt=""></a>
-    <p>{{$value.title}}</p>
-</li>
-{{/each}}
+    {{each data}}
+    <li>
+        <a href="./article.html?id={{$value.id}}"><img src="{{$value.cover}}" alt=""></a>
+        <p>{{$value.title}}</p>
+    </li>
+    {{/each}}
 </script>
-
+<script type="text/html" id='tp2'>
+    {{each data}}
+    <div class="common_news_list">
+        <a href="#" class="list_pic"><img src="{{$value.cover}}" alt=""></a>
+        <h4><a href="#">{{$value.title}} </a></h4>
+        <p>{{@ $value.intro}}
+        </p>
+        <div class="new_info">
+            <span>标签：{{$value.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{$value.read}}
+                )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{$value.comments}} )</span>
+            <b>发布于 {{$value.date}}</b>
+        </div>
+    </div>
+    {{/each}}
+</script>
 <script>
-$.get({
-    url:'http://localhost:8080/api/v1/index/hotpic',
-    success:function(res){
-        console.log(res);
-        
-        let html=template('tp1',res)
-        $('.focus_list').html(html)
-        $('.focus_list li:eq(0)').addClass('first')
-    }
-})
+    $.get({
+        url: 'http://localhost:8080/api/v1/index/hotpic',
+        success: function (res) {
+            // console.log(res);
 
+            let html = template('tp1', res)
+            $('.focus_list').html(html)
+            $('.focus_list li:eq(0)').addClass('first')
+        }
+    })
+    $.get({
+        url: 'http://localhost:8080/api/v1/index/latest',
+        success: function (res) {
+            console.log(res);
+            let html = template('tp2', res)
+            $('.common_news').html(html)
+        }
+    })
 </script>
