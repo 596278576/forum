@@ -18,7 +18,7 @@
     <div class="container-fluid">
         <div class="row spannel_list">
             <div class="col-sm-3 col-xs-6">
-                <div class="spannel">
+                <div class="spannel p">
                     <em>10015</em><span>篇</span>
                     <b>总文章数</b>
                 </div>
@@ -62,9 +62,31 @@
 
     <!-- 折线图 -->
     <script>
-        var json = '{"code":200,"msg":"获取成功","date":[{"date":"2019-05-20","count":23},{"date":"2019-05-21","count":19},{"date":"2019-05-22","count":29},{"date":"2019-05-23","count":24},{"date":"2019-05-24","count":28},{"date":"2019-05-25","count":28},{"date":"2019-05-26","count":19},{"date":"2019-05-27","count":25},{"date":"2019-05-28","count":25}]}';
-        var obj = JSON.parse(json);
-        loadEchars(obj);
+        $.get({
+            url:'http://localhost:8080/api/v1/admin/data/info',
+            success:function(res){
+                // console.log(res);
+                
+                $('.p>em').text(res.totalComment);
+                $('.scolor01>em').text(res.dayArticle)
+                $('.scolor02>em').text(res.totalComment)
+                $('.scolor03>em').text(res.dayComment)
+            }
+        })
+
+
+        // var json = '{"code":200,"msg":"获取成功","date":[{"date":"2019-05-20","count":23},{"date":"2019-05-21","count":19},{"date":"2019-05-22","count":29},{"date":"2019-05-23","count":24},{"date":"2019-05-24","count":28},{"date":"2019-05-25","count":28},{"date":"2019-05-26","count":19},{"date":"2019-05-27","count":25},{"date":"2019-05-28","count":25}]}';
+        // var obj = JSON.parse(json);
+        let obj=[]
+        $.get({
+            url:'http://localhost:8080/api/v1/admin/data/article',
+            success:function(res){
+                console.log(res);
+                loadEchars(res);
+            }
+
+        })
+        // loadEchars(obj);
 
         function loadEchars(obj) {
             // 基于准备好的dom，初始化echarts实例
