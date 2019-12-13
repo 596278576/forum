@@ -269,6 +269,11 @@
 
     {{/each}}
 </script>
+<script type="text/html" id='tp5'>
+    {{each data}}
+    <li><a href="#">{{@ $value.intro}}</a></li>
+    {{/each}}
+</script>
 <script>
     $.get({
         url: 'http://localhost:8080/api/v1/index/hotpic',
@@ -304,6 +309,15 @@
             // console.log(res);
             let html = template('tp4', res)
             $('.comment_list').html(html)
+            
+        }
+    })
+    $.get({
+        url: 'http://localhost:8080/api/v1/index/attention',
+        success: function (res) {
+            console.log(res);
+            let html = template('tp5', res)
+            $('.guanzhu_list').html(html)
             
         }
     })
