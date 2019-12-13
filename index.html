@@ -241,8 +241,8 @@
 <script type="text/html" id='tp2'>
     {{each data}}
     <div class="common_news_list">
-        <a href="#" class="list_pic"><img src="{{$value.cover}}" alt=""></a>
-        <h4><a href="#">{{$value.title}} </a></h4>
+        <a href="./article.html?id={{$value.id}}" class="list_pic"><img src="{{$value.cover}}" alt=""></a>
+        <h4><a href="./article.html?id={{$value.id}}">{{$value.title}} </a></h4>
         <p>{{@ $value.intro}}
         </p>
         <div class="new_info">
@@ -251,6 +251,12 @@
             <b>发布于 {{$value.date}}</b>
         </div>
     </div>
+    {{/each}}
+</script>
+<script type="text/html" id='tp3'>
+    {{each data}}
+    <li><span>{{$index+1}}</span><a href="./article.html?id={{$value.id}}">{{$value.title}}</a></li>
+
     {{/each}}
 </script>
 <script>
@@ -267,9 +273,19 @@
     $.get({
         url: 'http://localhost:8080/api/v1/index/latest',
         success: function (res) {
-            console.log(res);
+            // console.log(res);
             let html = template('tp2', res)
             $('.common_news').html(html)
+        }
+    })
+    $.get({
+        url: 'http://localhost:8080/api/v1/index/rank',
+        success: function (res) {
+            console.log(res);
+            let html = template('tp3', res)
+            $('.hotrank_list').html(html)
+            $('.hotrank_list li:eq(0) span').addClass('first')
+            $('.hotrank_list li:eq(1) span').addClass('second')
         }
     })
 </script>
