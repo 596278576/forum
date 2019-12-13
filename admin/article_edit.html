@@ -133,6 +133,7 @@
         let fd=new FormData(form);
         fd.append('id',id)
         fd.append('content',editor.txt.text());
+        fd.append('state','已发布')
 
         $.post({
             url:BigNew.article_edit,
@@ -141,6 +142,26 @@
             contentType:false,
             success:function(res){
                 alert(res.msg)
+                history.back();
+            }
+        })
+    })
+
+    $('.btn-draft').click(function(e){
+        e.preventDefault();
+        let form=$('#form')[0];
+        let fd=new FormData(form);
+        fd.append('id',id)
+        fd.append('content',editor.txt.text());
+
+        $.post({
+            url:BigNew.article_edit,
+            data:fd,
+            processData:false,
+            contentType:false,
+            success:function(res){
+                alert(res.msg)
+                history.back();
             }
         })
     })
