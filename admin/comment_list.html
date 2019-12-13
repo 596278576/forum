@@ -163,3 +163,53 @@
 </body>
 
 </html>
+<script src="./libs/http.js"></script>
+<script type="text/html" id='tp1'>
+  {{each data.data}}
+  {{if $value.state=='待审核'}}
+  <tr class='danger'>
+  {{else}}
+  <tr>
+    {{/if}}
+
+    <td>{{$value.author}}</td>
+    <td>{{$value.content}}</td>
+    <td>{{$value.title}}</td>
+    <td>{{$value.date}}</td>
+    <td>{{$value.state}}</td>
+    <td class="text-center">
+      {{if $value.state=='待审核'}}
+      <a href="javascript:void(0);;" class="btn  btn-xs btn-info pass">通过</a>
+      <a href="javascript:void(0);;" class="btn btn-danger btn-xs nopass">拒绝</a>
+      {{else if $value.state=='已通过'}}
+      <a href="javascript:void(0);;" class="btn btn-warning btn-xs nopass">拒绝</a>
+      <a href="javascript:void(0);;" class="btn btn-danger btn-xs del">删除</a>
+      {{else}}
+      <a href="javascript:void(0);;" class="btn  btn-xs btn-info pass">通过</a>
+      <a href="javascript:void(0);;" class="btn btn-danger btn-xs del">删除</a>
+      {{/if}}
+
+    </td>
+  </tr>
+  {{/each]}}
+</script>
+<script>
+  let my = 1;
+
+  function get(my, callback) {
+    $.get({
+      url: BigNew.comment_list,
+      data: {
+        page: my,
+        perpage: 10
+      },
+      success: function (res) {
+        console.log(res);
+
+        $('tbody').html(template('tp1', res))
+        callback(res)
+      }
+    })
+  }
+  get(1, function () {})
+</script>
