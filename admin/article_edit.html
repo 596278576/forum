@@ -54,7 +54,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
                     <div class="col-sm-4">
-                            <div class="jeinpbox"><input type="text" class="dateinput dateicon je-mr25" id="theme03" placeholder="YYYY-MM-DD hh:mm:ss" readonly=""></div>
+                            <div class="jeinpbox"><input type="text" class="dateinput dateicon je-mr25" id="theme03" placeholder="YYYY-MM-DD hh:mm:ss" readonly="" name='date'></div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -104,4 +104,23 @@ jeDate("#theme03",{
         var editor = new E('#editor')
         // 或者 var editor = new E( document.getElementById('editor') )
         editor.create()
+
+        let id=location.search.substring(4);
+        $.get({
+            url:BigNew.article_search,
+            data:{
+                id:id
+            },
+            success:function(res){
+                console.log(res);
+                // for(let key in res.data){
+                //     $('input.'+key).val(res.data[key])
+                // }
+                $('#inputTitle').val(res.data.title);
+                $('.article_cover').attr('src',res.data.cover);
+                $('.category').val(res.data.categoryId);
+                $('#theme03').val(res.data.date);
+                editor.txt.text(res.data.content);
+            }   
+        })
 </script>
