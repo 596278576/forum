@@ -27,14 +27,18 @@
                 <div class="col-xs-6">
                     <form class="form-inline">
                         <select id="selCategory" name="" class="form-control input-sm">
-
+                            <!-- <option value="">所有分类</option> -->
+                            <!-- <option>未分类</option>
+                            <option>奇趣事</option>
+                            <option>会生活</option>
+                            <option>爱旅行</option> -->
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
                             <option value="">所有状态</option>
                             <option value="草稿">草稿</option>
                             <option value="已发布">已发布</option>
                         </select>
-                        <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
+                        <button id="btnSearch" class="btn btn-primary btn-sm">筛选</button>
                     </form>
                 </div>
                 <div class="col-xs-6">
@@ -53,75 +57,157 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    <!-- <tr>
+                        <td>王积千造统最头</td>
+                        <td>杰克</td>
+                        <td>奇趣事</td>
+                        <td class="text-center">2017-06-08 07:08:46</td>
+                        <td class="text-center">已发布</td>
+                        <td class="text-center">
+                            <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+                            <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
+                        </td>
+                    </tr> -->
                 </tbody>
             </table>
             <div class="row text-center">
-                    <ul id="pagination" class="pagination-sm"></ul>
+                <ul id="pagination-demo" class="pagination-sm"></ul>
+                <div id="tips">已经没有数据了，不要想哦</div>
             </div>
         </div>
     </div>
-</body>
-<script src="./libs/http.js"></script>
-<script type="text/html" id='tp'>
-    <option value="">所有分类</option>
-    {{ each data}}
-    <option vlaue="{{$value.id}}">{{$value.name}}</option>
-    {{/each}}
-</script>
-<script type="text/html" id="tp2">
-    {{each data.data}}
-    <tr>
-            <td>{{$value.title}}</td>
-            <td>{{$value.author}}</td>
-            <td>{{$value.category}}</td>
-            <td class="text-center">{{$value.date}}</td>
-            <td class="text-center">{{$value.state}}</td>
-            <td class="text-center">
-                <a href="article_edit.html?id={{$value.id}}" class="btn btn-default btn-xs">编辑</a>
-                <a href="javascript:void(0);" data-id='{{$value.id}}' class="btn btn-danger btn-xs delete">删除</a>
-            </td>
-        </tr>
-    {{/each}}
-</script>
-<script>
-    $.get({
-        url:BigNew.category_list,
-        success:function(res){
-            if(res.code==200){
-                let html=template('tp',res);
-                $('#selCategory').html(html)
-            }
-        }
-    })
 
+    <script src="./libs/http.js"></script>
 
-    function getdata(pages){
-        $.get({
-            url: BigNew.article_query,
-            data:{
-                perpage:10,
-                page:pages,
-                state:$('#selStatus').val(),
-                type:$('#selCategory').val()
-            },
-            success:function(res){
-                let html=template('tp2',res);
-                $('tbody').html(html);
-                $('#pagination').twbsPagination({
-                        totalPages: res.data.totalPage,
-                        visiblePages: 7,
-                        first: '首页',
-                        prev: '上一页',
-                        next: '下一页',
-                        last: '尾页',
-                        onPageClick: function (event, page) {
-                        getdata(page);
+    <script type="text/html" id="categoryList">
+        <option value="">所有分类</option>
+        {{each data}}
+            <option value='{{$value.id}}'>{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+    <!-- 文章条目模板 -->
+    <script type="text/html" id="artList">
+        {{each data.data}}
+            <tr>
+                <td>{{$value.title}}</td>
+                <td>{{$value.author}}</td>
+                <td>{{$value.category}}</td>
+                <td class="text-center">{{$value.date}}</td>
+                <td class="text-center">{{$value.state}}</td>
+                <td class="text-center">
+                    <a href="article_edit.html?id={{$value.id}}" class="btn btn-default btn-xs bj">编辑</a>
+                    <a href="javascript:void(0);" data-id='{{$value.id}}' class="btn btn-danger btn-xs delete">删除</a>
+                </td>
+            </tr>
+        {{/each}}
+    </script>
+
+    <script>
+        // 当页面一加载就需要将文章类别信息和文章条目信息展示在页面
+        $(function () {
+            //获取文章类别信息
+            $.get({
+                url: BigNew.category_list,
+                success: function (res) {
+                    // console.log(res);
+                    if (res.code == 200) {
+                        let htmlStr = template('categoryList', res)
+                        $('#selCategory').html(htmlStr)
                     }
-                })
+                }
+            });
+            // 封装一个获取数据的方法
+            function getData(pages, callback) {
+                $.get({
+                    url: BigNew.article_query,
+                    data: {
+                        type: $('#selCategory').val(),
+                        state: $('#selStatus').val(),
+                        page: pages,
+                        perpage: perpage
+                    },
+                    success: function (res) {
+                        // console.log(res);
+                        let htmlStr = template('artList', res);
+                        $('tbody').html(htmlStr);
+                        //我们获取到数据之后，我们还需要在这里写代码处理，所以我们使用一个函数，使用回调
+                        if (res.data.data.length != 0 && callback != null) {
+                            $('#pagination-demo').show();
+                            $('#tips').hide();
+                            callback(res)
+                        }else if(res.data.data.length == 0){
+                            // alert('亲，没有数据');
+                            // $('#pagination-demo').hide();
+                            // $('#tips').show();
+                            if(mypage==1&&res.data.data.length == 0){
+                                alert('亲，没有数据');
+                                $('#pagination-demo').hide();
+                                $('#tips').show();
+                            }if(mypage>1&&res.data.data.length == 0){
+                                $('#pagination-demo').twbsPagination('changeTotalPages',res.data.totalPage,mypage-1)
+                            }
+                        }
+                    }
+                });
             }
+
+            //定了两个变量，用来表示页码和条数
+            let mypage = 1;
+            let perpage = 10;
+            //页面一加载就展示文章条目数据
+            getData(mypage, function (res) {
+                $('#pagination-demo').twbsPagination({
+                    totalPages: res.data.totalPage,
+                    visiblePages: 7,
+                    first: '首页',
+                    prev: '上一页',
+                    next: '下一页',
+                    last: '尾页',
+                    onPageClick: function (event, page) {
+                        mypage = page;
+                        getData(mypage, null);
+                    }
+                });
+            })
+
+            //筛选按钮注册点击事件
+            $('#btnSearch').on('click', function (e) {
+                //阻止默认行为
+                e.preventDefault();
+
+                getData(1,function(res) {
+                    //搜索到的数据条目是不一样的，所以总的页数是会动态改变的
+                    $('#pagination-demo').twbsPagination('changeTotalPages',res.data.totalPage,1)
+                });
+
+            })
+
+
+            //删除文章  删除是动态生成的，需要使用事件委托来注册
+            $('tbody').on('click','.delete',function() {
+                let artId = $(this).attr('data-id');
+                // console.log(mypage);
+                if(confirm('你确定要删除吗？')) {
+                    $.post({
+                        url: BigNew.article_delete,
+                        data: {
+                            id: artId
+                        },
+                        success: function(res) {
+                            // console.log(res);
+                            // window.location.reload();
+                            getData(mypage,function(res){
+                                $('#pagination-demo').twbsPagination('changeTotalPages',res.data.totalPage,mypage)
+                            })
+                        }
+                    })
+                }
+            })
+            
         })
-    }
-    getdata(1);
-</script>
+    </script>
+
+</body>
+
 </html>

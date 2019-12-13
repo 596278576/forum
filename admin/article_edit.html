@@ -10,10 +10,13 @@
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
     <!-- jq -->
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
+    <script src="./libs/jedate/js/jedate.js"></script>
+    <script src="./libs/wangEditor.js"></script>
 </head>
 
 <body>
@@ -51,11 +54,15 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
                     <div class="col-sm-4">
+                            <div class="jeinpbox"><input type="text" class="dateinput dateicon je-mr25" id="theme03" placeholder="YYYY-MM-DD hh:mm:ss" readonly=""></div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
                     <div class="col-sm-10">
+                            <div id="editor">
+                                    <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
+                                </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -70,3 +77,31 @@
 </body>
 
 </html>
+<script src="./libs/http.js"></script>
+<script type="text/html" id='tp'>
+    {{each data}}
+        <option value='{{$value.id}}'>{{$value.name}}</option>
+    {{/each}}
+</script>
+<script>
+$('#inputCover').change(function(){
+    let file=this.files[0];
+    let url=URL.createObjectURL(file);
+    $('.article_cover').attr('src',url);
+})
+$.get({
+    url:BigNew.category_list,
+    success:function(res){
+        $('.category').html(template('tp',res))
+    }
+})
+jeDate("#theme03",{
+        multiPane:false,
+        theme:{bgcolor:"#D91600",pnColor:"#FF6653"},
+        format: "YYYY-MM-DD hh:mm:ss"
+    });
+    var E = window.wangEditor
+        var editor = new E('#editor')
+        // 或者 var editor = new E( document.getElementById('editor') )
+        editor.create()
+</script>
