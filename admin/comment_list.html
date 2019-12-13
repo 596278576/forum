@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="css/main.css">
   <script src="./libs/jquery-1.12.4.min.js"></script>
   <script src="./libs/template-web.js"></script>
+  <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
+  <script src="./libs/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -142,7 +144,7 @@
         </tbody>
       </table>
       <div class="row text-center">
-        <ul class="pagination pagination-sm">
+        <!-- <ul class="pagination pagination-sm">
           <li class="page-item first disabled"><a href="#" class="page-link">首页</a></li>
           <li class="page-item prev disabled"><a href="#" class="page-link">上一页</a></li>
           <li class="page-item active"><a href="#" class="page-link">1</a></li>
@@ -154,7 +156,7 @@
           <li class="page-item"><a href="#" class="page-link">7</a></li>
           <li class="page-item next"><a href="#" class="page-link">下一页</a></li>
           <li class="page-item last"><a href="#" class="page-link">尾页</a></li>
-        </ul>
+        </ul> -->
         <ul id="pagination" class="pagination-sm"></ul>
       </div>
 
@@ -168,7 +170,7 @@
   {{each data.data}}
   {{if $value.state=='待审核'}}
   <tr class='danger'>
-  {{else}}
+    {{else}}
   <tr>
     {{/if}}
 
@@ -179,14 +181,14 @@
     <td>{{$value.state}}</td>
     <td class="text-center">
       {{if $value.state=='待审核'}}
-      <a href="javascript:void(0);;" class="btn  btn-xs btn-info pass">通过</a>
-      <a href="javascript:void(0);;" class="btn btn-danger btn-xs nopass">拒绝</a>
+      <a href="javascript:void(0);;" data-id='{{$value.id}}'  class="btn  btn-xs btn-info pass">通过</a>
+      <a href="javascript:void(0);;" data-id='{{$value.id}}' class="btn btn-danger btn-xs nopass">拒绝</a>
       {{else if $value.state=='已通过'}}
-      <a href="javascript:void(0);;" class="btn btn-warning btn-xs nopass">拒绝</a>
-      <a href="javascript:void(0);;" class="btn btn-danger btn-xs del">删除</a>
+      <a href="javascript:void(0);;" data-id='{{$value.id}}' class="btn btn-warning btn-xs nopass">拒绝</a>
+      <a href="javascript:void(0);;" data-id='{{$value.id}}' class="btn btn-danger btn-xs del">删除</a>
       {{else}}
-      <a href="javascript:void(0);;" class="btn  btn-xs btn-info pass">通过</a>
-      <a href="javascript:void(0);;" class="btn btn-danger btn-xs del">删除</a>
+      <a href="javascript:void(0);;" data-id='{{$value.id}}' class="btn  btn-xs btn-info pass">通过</a>
+      <a href="javascript:void(0);;" data-id='{{$value.id}}' class="btn btn-danger btn-xs del">删除</a>
       {{/if}}
 
     </td>
@@ -204,12 +206,75 @@
         perpage: 10
       },
       success: function (res) {
-        console.log(res);
+        // console.log(res);
 
         $('tbody').html(template('tp1', res))
         callback(res)
       }
     })
   }
-  get(1, function () {})
+  get(1, function (res) {
+    //分页控件
+    $('#pagination').twbsPagination({
+      totalPages: res.data.totalPage,
+      visiblePages: 7,
+      first: '首页',
+      prev: '上一页',
+      next: '下一页',
+      last: '尾页',
+      onPageClick: function (event, page) {
+        my = page;
+        get(my, function(){});
+      }
+    });
+  })
+  $('tbody').on('click','.pass',function(){
+    let id=$(this).attr('data-id');
+    $.post({
+      url:BigNew.comment_pass,
+      data:{
+        id:id
+      },
+      success:function(res){
+        get(my,function(res){
+          $('#pagination').twbsPagination('changeTotalPages',res.data.totalPage,my)
+        })
+      }
+    })
+  })
+
+  $('tbody').on('click','.nopass',function(){
+    let id=$(this).attr('data-id');
+    $.post({
+      url:BigNew.comment_reject,
+      data:{
+        id:id
+      },
+      success:function(res){
+        get(my,function(res){
+          $('#pagination').twbsPagination('changeTotalPages',res.data.totalPage,my)
+        })
+      }
+    })
+  })
+
+  $('tbody').on('click','.del',function(){
+    let id=$(this).attr('data-id');
+    $.post({
+      url:BigNew.comment_delete,
+      data:{
+        id:id
+      },
+      success:function(res){
+        get(my,function(res){
+          if(res.data.length==0&&res.data.totalPage!=1){
+            $('#pagination').twbsPagination('changeTotalPages',res.data.totalPage,my-1)
+          }else{
+            $('#pagination').twbsPagination('changeTotalPages',res.data.totalPage,my)
+          }
+          
+        })
+      }
+    })
+  })
 </script>
