@@ -13,7 +13,7 @@
 
 <body>
     <div class="header">
-        <a href="#" class="logo fl"><img src="images/logo.png" alt="logo"></a>
+        <a href="./index.html" class="logo fl"><img src="images/logo.png" alt="logo"></a>
         <div class="search_form fl">
             <input type="text" class="search_txt" placeholder="黑洞照片">
             <button class="search_btn"><i class="fa fa-search"></i></button>
@@ -98,7 +98,7 @@
             </div>
 
             <div class="comment_list_con">
-                <div class="comment_detail_list">
+                <!-- <div class="comment_detail_list">
                     <div class="person_pic fl">乔</div>
                     <div class="name_time fl"><b>虚竹</b><span>4小时前</span></div>
                     <div class="comment_text fl">
@@ -125,7 +125,7 @@
                     <div class="comment_text fl">
                         遏制茅台酒价格过快上涨，多渠道供给，就不一定要买，租茅台酒也可以的，租售同权。开发共有产权茅台酒，让老百姓喝得起茅台酒，饮者有其酒。
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
         <div class="right_con setfl">
@@ -212,3 +212,70 @@
 </body>
 
 </html>
+<script type="text/html" id='tp1'>
+    
+    <p>{{@ data.content}}</p>
+</script>
+<script type="text/html" id='tp2'>
+    上一篇： <a href="./article.html?id={{data.prev.id}}">{{data.prev.title}}</a><br>
+    {{if data.next!=null}}
+    下一篇： <a href="./article.html?id={{data.next.id}}">{{data.prev.title}}</a>
+    {{elst}}
+    
+    {{/if}}
+</script>
+<script type="text/html" id='tp3'>
+{{each data}}
+<div class="comment_detail_list">
+    <div class="person_pic fl">{{$value.author}}</div>
+    <div class="name_time fl"><b>{{$value.author}}</b><span>{{$value.date}}</span></div>
+    <div class="comment_text fl">
+        {{$value.content}}
+    </div>
+</div>
+{{/each}}
+</script>
+<script>
+let id=location.search.substring(4)
+$.get({
+    url:'http://localhost:8080/api/v1/index/article',
+    data:{
+        id:id
+    },
+    success:function(res){
+        console.log(res);
+        $('.article_title').text(res.data.title)
+        $('.article_info').html(`杰克 发布于 ${res.data.date}&nbsp;&nbsp;&nbsp;分类: ${res.data.category}&nbsp;&nbsp;&nbsp;阅读:
+                (${res.data.read})&nbsp;&nbsp;&nbsp;评论: (${res.data.comments})`)
+        $('.article_con').html(template('tp1',res))
+        $('.article_links').html(template('tp2',res))
+    }
+})
+$('.comment_sub').click(function(e){
+    e.preventDefault();
+    $.post({
+        url:'http://localhost:8080/api/v1/index/post_comment',
+        data:{
+            author:$('.comment_name').val(),
+            content:$('.comment_input').val(),
+            articleId:id
+        },
+        success:function(res){
+            alert(res.msg)
+        }
+    })
+
+})
+$.get({
+    url:'http://localhost:8080/api/v1/index/get_comment',
+    data:{
+        articleId:id
+    },
+    success:function(res){
+        console.log(res);
+        
+        $('.comment_list_con').html(template('tp3',res))
+    }
+})
+
+</script>
